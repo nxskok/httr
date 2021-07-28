@@ -1,0 +1,52 @@
+
+```{r}
+library(httr)
+library(rvest)
+library(tidyverse)
+library(lubridate)
+```
+
+
+
+
+```{r}
+team_ids <- c(777, 1517)
+teams <- numbers_to_team(team_ids)
+teams
+```
+
+
+```{r}
+game_ids <- c(3517567, 3517577, 3528763)
+games <- game_numbers_to_info(game_ids)
+games
+game_ids <- c(3517566, 3517568)
+games0 <- game_numbers_to_info(game_ids)
+games0
+games %>% rows_upsert(games0) -> games
+games
+```
+
+```{r}
+team_ids <- games_to_teams(g1, teams)
+team_ids
+```
+
+```{r}
+teams0 <- numbers_to_team(team_ids)
+teams0
+```
+
+
+```{r}
+teams %>% rows_upsert(teams0) -> teams
+teams
+```
+
+
+```{r}
+games %>% left_join(teams, by = c("t1"="id")) %>% 
+  left_join(teams, by = c("t2"="id")) %>% 
+  select(game, name.x, name.y, score, status, comp, timestamp)
+```
+
