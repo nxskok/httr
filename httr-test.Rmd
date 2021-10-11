@@ -18,7 +18,7 @@ initialize games, teams, comps to empty
 ```
 
 
-initialize
+initialize from nothing 
 
 ```{r}
 game_id <- sample(3510000:3540000, 5)
@@ -35,27 +35,34 @@ teams <- numbers_to_team(team_id)
 teams
 ```
 
-this goes in number_to_country
+some comps
 
 ```{r}
-team_id <- 688
-team_id <- 12046
-url_base <- "https://uk.soccerway.com/teams/estonia/jalgpalliklubi-fc-flora/"
-url <- str_c(url_base, team_id, "/")
-content <- url_to_content(url)
+comp_id <- sample(50000:60000, 5)
+comp_id
+comps <- numbers_to_comp(comp_id)
+comps
+```
+## initialize from previous
 
-content %>% html_nodes(xpath = '//*[@id="page_team_1_block_team_info_7"]/div/div[2]') -> dl 
-dl %>% html_nodes("dt") %>% html_text() -> heading
-dl %>% html_nodes("dd") %>% html_text() -> entry
-tibble(heading, entry) %>% filter(heading == "Country") %>% pull("entry")
-# number_to_team(688)
+```{r}
+games <- read_rds("games.rds")
+teams <- read_rds("teams.rds")
+comps <- read_rds("comps.rds")
 ```
 
 
+## update
+
+
 ```{r}
-game_ids <- sample(3510000:3540000, 5)
-game_ids
-games <- update_games(game_ids, games)
+# game_ids <- sample(3510000:3540000, 5)
+start_game <- 3554028
+lo <- start_game - 100
+hi <- start_game + 50
+# game_ids
+games <- update_games(lo:hi, games)
+# games <- update_games(game_ids, games)
 games
 ```
 
@@ -63,20 +70,13 @@ update teams
 
 ```{r}
 teams <- update_teams(teams, games)
-teams %>% unnest_wider(country) %>% View()
+teams
 ```
-
-sometimes the wrong bit is extracted from the team info (it could be second or third)
-
-```{r}
-number_to_country(12046)
-```
-
 
 update comps
 
 ```{r}
-comps <- update_comps(comps, games)
+comps <- update_comps(comps, games) # this can fail if no comp ids to add (check inside)
 comps
 ```
 
@@ -90,11 +90,11 @@ games %>%
   left_join(teams, by = c("t1"="id")) %>% 
   left_join(teams, by = c("t2"="id")) %>% 
   left_join(comps, by = c("comp" = "comp_id")) %>% 
-  select(game, name.x, name.y, score, status, where, comp_name, timestamp) %>% 
-  arrange(game)
+  select(game, home_team = name.x, away_team = name.y, score, status, where, comp_name, timestamp) %>% 
+  arrange(game) %>% View()
 ```
 
-
+## save games
 
 ```{r}
 write_rds(games, "games.rds")

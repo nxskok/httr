@@ -1,6 +1,8 @@
 url_to_content <- function(url) {
   # now with httr2
-  request(url) %>% req_throttle(rate = 1) -> req
+  print(url)
+  request(url) %>% req_retry(max_tries = 10, is_transient = ~ resp_status(.x) %in% c(429, 500, 503)) %>% 
+    req_throttle(rate = 1/1) -> req
   req %>% req_perform() -> resp
   resp %>% resp_body_html()
 }
@@ -36,7 +38,12 @@ content_to_comp <- function(content) {
 content_to_statuses <- function(content) {
   content %>% 
     html_nodes("#page_match_1_block_match_info_5 > div > div > div.container.middle > h3") %>% html_text() %>%
-    str_split("\n") %>% .[[1]] 
+    str_split("\n") -> statuses
+  if (length(statuses) > 0) {
+    statuses %>% .[[1]] 
+  } else {
+    c("", "", "", "0 - 0", "0 - 0") # dummy status
+  }
 }
 
 statuses_to_status <- function(statuses) {
