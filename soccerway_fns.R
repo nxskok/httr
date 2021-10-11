@@ -1,6 +1,6 @@
 url_to_content <- function(url) {
   # now with httr2
-  request(my_url) %>% req_throttle(rate = 1) -> req
+  request(url) %>% req_throttle(rate = 1) -> req
   req %>% req_perform() -> resp
   resp %>% resp_body_html()
 }

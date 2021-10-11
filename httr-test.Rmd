@@ -10,7 +10,7 @@ source("comp_fns.R")
 source("update.R")
 ```
 
-initialize games
+initialize games, teams, comps to empty
 
 ```{r}
 # initial game numbers
@@ -18,13 +18,44 @@ initialize games
 ```
 
 
+initialize
 
+```{r}
+game_id <- sample(3510000:3540000, 5)
+games <- game_numbers_to_info(game_id)
+games
+```
+
+some teams
+
+```{r}
+team_id <- sample(1:50000, 5)
+team_id
+teams <- numbers_to_team(team_id)
+teams
+```
+
+this goes in number_to_country
+
+```{r}
+team_id <- 688
+team_id <- 12046
+url_base <- "https://uk.soccerway.com/teams/estonia/jalgpalliklubi-fc-flora/"
+url <- str_c(url_base, team_id, "/")
+content <- url_to_content(url)
+
+content %>% html_nodes(xpath = '//*[@id="page_team_1_block_team_info_7"]/div/div[2]') -> dl 
+dl %>% html_nodes("dt") %>% html_text() -> heading
+dl %>% html_nodes("dd") %>% html_text() -> entry
+tibble(heading, entry) %>% filter(heading == "Country") %>% pull("entry")
+# number_to_team(688)
+```
 
 
 ```{r}
-game_ids <- sample(3510000:3540000, 10)
+game_ids <- sample(3510000:3540000, 5)
 game_ids
-games <- update_games(game_ids, NULL)
+games <- update_games(game_ids, games)
 games
 ```
 
@@ -32,10 +63,10 @@ update teams
 
 ```{r}
 teams <- update_teams(teams, games)
-teams
+teams %>% unnest_wider(country) %>% View()
 ```
 
-sometimes the wrong bit is extracted from the team info
+sometimes the wrong bit is extracted from the team info (it could be second or third)
 
 ```{r}
 number_to_country(12046)
