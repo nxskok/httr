@@ -1,6 +1,8 @@
 url_to_content <- function(url) {
-  Sys.sleep(0.5)
-  content(GET(url))
+  # now with httr2
+  request(my_url) %>% req_throttle(rate = 1) -> req
+  req %>% req_perform() -> resp
+  resp %>% resp_body_html()
 }
 
 content_to_date <- function(content, tz = "America/Toronto") {

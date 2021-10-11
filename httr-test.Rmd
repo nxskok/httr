@@ -1,52 +1,73 @@
 
 ```{r}
-library(httr)
+library(httr2)
 library(rvest)
 library(tidyverse)
 library(lubridate)
+source("teams_fns.R")
+source("soccerway_fns.R")
+source("comp_fns.R")
+source("update.R")
+```
+
+initialize games
+
+```{r}
+# initial game numbers
+# games <- game_numbers_to_info()
 ```
 
 
 
 
+
 ```{r}
-team_ids <- c(777, 1517)
-teams <- numbers_to_team(team_ids)
+game_ids <- sample(3510000:3540000, 10)
+game_ids
+games <- update_games(game_ids, NULL)
+games
+```
+
+update teams
+
+```{r}
+teams <- update_teams(teams, games)
 teams
 ```
 
+sometimes the wrong bit is extracted from the team info
 
 ```{r}
-game_ids <- c(3517567, 3517577, 3528763)
-games <- game_numbers_to_info(game_ids)
-games
-game_ids <- c(3517566, 3517568)
-games0 <- game_numbers_to_info(game_ids)
-games0
-games %>% rows_upsert(games0) -> games
-games
-```
-
-```{r}
-team_ids <- games_to_teams(g1, teams)
-team_ids
-```
-
-```{r}
-teams0 <- numbers_to_team(team_ids)
-teams0
+number_to_country(12046)
 ```
 
 
+update comps
+
 ```{r}
-teams %>% rows_upsert(teams0) -> teams
-teams
+comps <- update_comps(comps, games)
+comps
 ```
 
 
+
+
+display games
+
 ```{r}
-games %>% left_join(teams, by = c("t1"="id")) %>% 
+games %>% 
+  left_join(teams, by = c("t1"="id")) %>% 
   left_join(teams, by = c("t2"="id")) %>% 
-  select(game, name.x, name.y, score, status, comp, timestamp)
+  left_join(comps, by = c("comp" = "comp_id")) %>% 
+  select(game, name.x, name.y, score, status, where, comp_name, timestamp) %>% 
+  arrange(game)
+```
+
+
+
+```{r}
+write_rds(games, "games.rds")
+write_rds(teams, "teams.rds")
+write_rds(comps, "comps.rds")
 ```
 

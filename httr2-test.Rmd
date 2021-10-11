@@ -1,0 +1,28 @@
+# packages
+
+```{r}
+library(tidyverse)
+library(httr2)
+```
+
+# get a url
+
+```{r}
+my_url <- "https://uk.soccerway.com/matches/2021/10/11/nc-america/wc-qualifying-concacaf/panama/united-states-of-america/3517504/"
+```
+
+make request
+
+```{r}
+request(my_url) %>% req_throttle(rate = 1) -> req
+```
+
+get response
+
+```{r}
+req %>% req_perform() -> resp
+resp %>% resp_headers()
+resp %>% resp_status()
+resp %>% resp_body_html()
+```
+
