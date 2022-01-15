@@ -42,6 +42,7 @@ comp_id <- sample(50000:60000, 5)
 comp_id
 comps <- numbers_to_comp(comp_id)
 comps
+# number_to_comp(52803)
 ```
 ## initialize from previous
 
