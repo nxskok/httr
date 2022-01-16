@@ -73,28 +73,26 @@ comps <- read_rds("comps.rds")
 
 
 ```{r}
-game_ids <- sample(3510000:3540000, 20)
-# start_game <- 3544028
-# lo <- start_game - 0
-# hi <- start_game + 10
-game_ids
-# games <- update_games(lo:hi, games)
+game_ids <- sample(3510000:3550000, 20)
+# find games I  don't have
+tibble(game = game_ids) %>% anti_join(games) %>% 
+  pull(game) -> game_ids
 games <- update_games(game_ids, games)
-games
+games %>% arrange(desc(retrieved)) %>% View("games")
 ```
 
 update teams
 
 ```{r}
 teams <- update_teams(teams, games)
-teams
+teams %>% arrange(desc(date)) %>% View("teams")
 ```
 
 update comps
 
 ```{r}
 comps <- update_comps(comps, games) # this can fail if no comp ids to add (check inside)
-comps
+comps %>% View("comps")
 ```
 
 
@@ -107,8 +105,8 @@ games %>%
   left_join(teams, by = c("t1"="id")) %>% 
   left_join(teams, by = c("t2"="id")) %>% 
   left_join(comps, by = c("comp" = "comp_id")) %>% 
-  select(game, home_team = name.x, away_team = name.y, score, status, where, comp_name, timestamp, retrieved) %>% 
-  arrange(game) %>% View()
+  select(game, home_team = name.x, away_team = name.y, score, status, where, comp_name, comp_part, season, timestamp, retrieved) %>% 
+  arrange(desc(status), desc(timestamp)) %>% View("games")
 ```
 
 ## save games

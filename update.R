@@ -1,6 +1,7 @@
 # update games then teams then comps
 
 update_games <- function(game_ids, games) {
+  print(glue::glue("There are {length(game_ids)} games to add."))
   games0 <- game_numbers_to_info(game_ids)
   games0 %>% filter(!error) %>% select(-error) -> games0
   games %>% rows_upsert(games0) 
