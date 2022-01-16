@@ -2,6 +2,7 @@
 
 update_games <- function(game_ids, games) {
   games0 <- game_numbers_to_info(game_ids)
+  games0 %>% filter(!error) %>% select(-error) -> games0
   games %>% rows_upsert(games0) 
 }
 

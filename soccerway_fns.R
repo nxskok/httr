@@ -3,18 +3,17 @@ url_to_response <- function(url) {
   request(url) %>% req_retry(max_tries = 10, is_transient = ~ resp_status(.x) %in% c(429, 500, 503)) %>% 
     req_throttle(rate = 1/1) -> req
   req %>% 
+    req_error(is_error = function(resp) FALSE) %>%
     req_perform() -> resp
-}
-
-url_to_error <- function(url) {
-  resp <- url_to_response(url)
-  resp_is_error()
 }
 
 url_to_content <- function(url) {
   # now with httr2
   resp <- url_to_response(url)
-  list(error = resp_is_error(resp), body = resp_body_html(resp))
+  was_error <- resp_is_error(resp)
+  if (was_error) return(list(error = TRUE, body = list()))
+  is_body <- resp_body_html(resp)
+  list(error = was_error, body = is_body)
 }
 
 content_to_date <- function(content, tz = "America/Toronto") {
@@ -76,15 +75,15 @@ game_number_to_url <- function(game_number) {
 game_number_to_info <- function(game_number) {
   my_url <- game_number_to_url(game_number)
   content <- url_to_content(my_url)
-  if (content$error) return(list())
-  date <- content_to_date(content)
+  if (content$error) return(list(error = TRUE))
+  date <- content_to_date(content$body)
   t1 <- content_to_team(content$body, 1)
   t2 <- content_to_team(content$body, 2)
   comp <- content_to_comp(content$body)
   statuses <- content_to_statuses(content$body)
   status <- statuses_to_status(statuses)
   score <- statuses_to_score(statuses, status)
-  list(timestamp = date, t1 = t1, t2 = t2, comp = comp, 
+  list(error = FALSE, timestamp = date, t1 = t1, t2 = t2, comp = comp, 
        status = status, score = score, retrieved = Sys.time())
 }
 

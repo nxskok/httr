@@ -26,11 +26,27 @@ games <- game_numbers_to_info(game_id)
 games
 ```
 
+```{r}
+enframe(game_id) %>% 
+  rowwise() %>% 
+  mutate(info = list(game_number_to_info(value))) %>% 
+  hoist(info, "error")
+```
+
+
+game_numbers_to_info <- function(game_numbers) {
+  enframe(game_numbers, name = NULL, value = "game") %>% 
+    rowwise() %>% 
+    mutate(info = list(game_number_to_info(game))) %>% 
+    unnest_wider(info)
+}
+
+
+
 some teams
 
 ```{r}
 team_id <- sample(1:50000, 5)
-team_id
 teams <- numbers_to_team(team_id)
 teams
 ```
