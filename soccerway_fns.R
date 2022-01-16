@@ -1,5 +1,5 @@
 url_to_response <- function(url) {
-  print(url)
+  # print(url)
   request(url) %>% req_retry(max_tries = 10, is_transient = ~ resp_status(.x) %in% c(429, 500, 503)) %>% 
     req_throttle(rate = 1/1) -> req
   req %>% 

@@ -73,13 +73,13 @@ comps <- read_rds("comps.rds")
 
 
 ```{r}
-# game_ids <- sample(3510000:3540000, 5)
-start_game <- 3554028
-lo <- start_game - 100
-hi <- start_game + 50
-# game_ids
-games <- update_games(lo:hi, games)
-# games <- update_games(game_ids, games)
+game_ids <- sample(3510000:3540000, 20)
+# start_game <- 3544028
+# lo <- start_game - 0
+# hi <- start_game + 10
+game_ids
+# games <- update_games(lo:hi, games)
+games <- update_games(game_ids, games)
 games
 ```
 
@@ -107,7 +107,7 @@ games %>%
   left_join(teams, by = c("t1"="id")) %>% 
   left_join(teams, by = c("t2"="id")) %>% 
   left_join(comps, by = c("comp" = "comp_id")) %>% 
-  select(game, home_team = name.x, away_team = name.y, score, status, where, comp_name, timestamp) %>% 
+  select(game, home_team = name.x, away_team = name.y, score, status, where, comp_name, timestamp, retrieved) %>% 
   arrange(game) %>% View()
 ```
 

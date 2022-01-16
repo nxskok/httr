@@ -8,6 +8,7 @@ update_games <- function(game_ids, games) {
 
 update_teams <- function(teams, games) {
   team_ids <- games_to_teams(games, teams)
+  print(glue::glue("There are {length(team_ids)} teams to add."))
   if (length(team_ids) > 0) {
     teams0 <- numbers_to_team(team_ids)
     teams %>% rows_upsert(teams0)
@@ -18,6 +19,7 @@ update_teams <- function(teams, games) {
 
 update_comps <- function(comps, games) {
   comp_ids <- games_to_comps(games, comps)
+  print(glue::glue("There are {length(comp_ids)} comps to add."))
   if (length(comp_ids) > 0) {
     comps0 <- numbers_to_comp(comp_ids)
     comps %>% rows_upsert(comps0)
