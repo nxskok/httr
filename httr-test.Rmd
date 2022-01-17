@@ -8,6 +8,7 @@ source("teams_fns.R")
 source("soccerway_fns.R")
 source("comp_fns.R")
 source("update.R")
+source("getting-games.R")
 ```
 
 initialize games, teams, comps to empty
@@ -71,49 +72,23 @@ comps <- read_rds("comps.rds")
 
 ## update
 
-
 ```{r}
-game_ids <- sample(3510000:3550000, 20)
-# find games I  don't have
-tibble(game = game_ids) %>% anti_join(games) %>% 
-  pull(game) -> game_ids
-games <- update_games(game_ids, games)
-games %>% arrange(desc(retrieved)) %>% View("games")
-```
-
-update teams
-
-```{r}
-teams <- update_teams(teams, games)
-teams %>% arrange(desc(date)) %>% View("teams")
-```
-
-update comps
-
-```{r}
-comps <- update_comps(comps, games) # this can fail if no comp ids to add (check inside)
-comps %>% View("comps")
+game_ids <- results_to_get(10)
+game_ids
 ```
 
 
 
-
-display games
-
 ```{r}
-games %>% 
-  left_join(teams, by = c("t1"="id")) %>% 
-  left_join(teams, by = c("t2"="id")) %>% 
-  left_join(comps, by = c("comp" = "comp_id")) %>% 
-  select(game, home_team = name.x, away_team = name.y, score, status, where, comp_name, comp_part, season, timestamp, retrieved) %>% 
-  arrange(desc(status), desc(timestamp)) %>% View("games")
+63679
+game_ids <- random_fixtures(3547947, 3548188, 320)
+length(game_ids)
 ```
 
-## save games
-
 ```{r}
-write_rds(games, "games.rds")
-write_rds(teams, "teams.rds")
-write_rds(comps, "comps.rds")
+update_everything(game_ids)
+display_games() %>% arrange(desc(retrieved)) %>% View("games")
 ```
+
+
 

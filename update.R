@@ -29,3 +29,29 @@ update_comps <- function(comps, games) {
     comps
   }
 }
+
+update_everything <- function(game_ids) {
+  games <- read_rds("games.rds")
+  teams <- read_rds("teams.rds")
+  comps <- read_rds("comps.rds")
+  games <- update_games(game_ids, games)
+  teams <- update_teams(teams, games)
+  comps <- update_comps(comps, games) # this can fail if no comp ids to add (check inside)
+  write_rds(games, "games.rds")
+  write_rds(teams, "teams.rds")
+  write_rds(comps, "comps.rds")
+}
+
+display_games <- function() {
+  games <- read_rds("games.rds")
+  teams <- read_rds("teams.rds")
+  comps <- read_rds("comps.rds")
+  games %>% 
+    left_join(teams, by = c("t1"="id")) %>% 
+    left_join(teams, by = c("t2"="id")) %>% 
+    left_join(comps, by = c("comp" = "comp_id")) %>% 
+    select(game, home_team = name.x, away_team = name.y, score, status, comp, # comp is competition number
+           where, comp_name, comp_part, season, timestamp, retrieved) %>% 
+    arrange(desc(status), desc(timestamp))
+}
+
