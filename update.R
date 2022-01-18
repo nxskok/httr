@@ -55,3 +55,67 @@ display_games <- function() {
     arrange(desc(status), desc(timestamp))
 }
 
+league_of <- function(game_id) {
+  games <- read_rds("games.rds")
+  games %>% filter(game == game_id) %>% pull(comp) 
+}
+
+league_limits <- function(game_id) {
+  games <- read_rds("games.rds")
+  games %>% arrange(game) %>% 
+    mutate(row = row_number()) %>% 
+    select(row, game, comp) -> d
+  # find comp of this game
+  d %>% filter(game == game_id) %>% pull(comp) -> this_comp
+  print(glue::glue("this comp is {this_comp}"))
+  d %>% drop_na(comp) %>% 
+    mutate(lag_comp = lag(comp, default = -1)) %>% 
+    mutate(difft = (comp != lag_comp)) %>% 
+    mutate(y = cumsum(difft)) -> dd 
+  # return(dd)
+  # then select the rows with the same y value as our game
+  dd %>% filter(game == game_id) %>% pull(y) -> our_y
+  dd %>% filter(y == our_y) %>% pull(row) %>% range() -> limits
+  lo <- limits[1]-1
+  hi <- limits[2]+1
+  d %>% slice(lo, hi) %>% pull(game) -> game_limits
+  game_limits
+}
+
+get_league <- function(this_game) {
+  n <- 10
+  while(TRUE) {
+    lim <- league_limits(this_game)
+    print(glue::glue("Limits: {lim}"))
+    print(glue::glue("Length {lim[2] - lim[1]}"))
+    if (lim[2] - lim[1] > 2000) stop("too many games to get")
+    game_ids <- random_fixtures(lim[1], lim[2], n)
+    n_game_ids <- length(game_ids)
+    print(glue::glue("There are {n_game_ids} games to get."))
+    if (n_game_ids==0) break
+    update_everything(game_ids)
+    n <- n*2
+  }
+}
+
+get_team_games <- function(data) {
+  # data is the games for a league
+  data %>% pivot_longer(t1:t2) %>% count(value) %>% 
+    summarize(team_count = length(n), m = mean(n), s = sd(n)) %>% 
+    mutate(cycles = m/(team_count - 1))
+}
+
+league_games <- function() {
+  games <- read_rds("games.rds")
+  # teams <- read_rds("teams.rds")
+  comps <- read_rds("comps.rds")
+  games %>% nest_by(comp) %>% 
+    rowwise() %>% 
+    mutate(stats = list(get_team_games(data))) %>% 
+    unnest_wider(stats) %>%
+    select(-data) %>% 
+    left_join(comps, by = c("comp" = "comp_id")) %>% 
+    select(-class) %>% 
+    arrange(desc(m)) %>% 
+    View("comps")
+}
