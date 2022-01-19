@@ -80,8 +80,9 @@ game_ids
 
 
 ```{r}
-base <- 3515871
-game_ids <- random_fixtures(3500000, 3700000, 100)
+base <- 3460000
+delta <-  10000
+game_ids <- random_fixtures(base-delta, base+delta, 200)
 length(game_ids)
 ```
 
@@ -94,7 +95,7 @@ find lower and upper limit of this league
 
 
 ```{r}
-this_game <- 3545567
+this_game <- 3549720
 game_limits <- league_limits(this_game)
 game_limits
 ```
@@ -104,7 +105,7 @@ get_league(this_game)
 display_games() %>% 
   filter(between(game, game_limits[1], game_limits[2])) %>% 
   arrange(game) %>% 
-  View("games")
+  View("these games")
 ```
 
 make a table of leagues with games
@@ -112,9 +113,11 @@ make a table of leagues with games
 
 ```{r}
 league_games()
+sample(1:920, 1)
 ```
 
 ```{r}
 display_games() %>% View("games")
 ```
+
 
