@@ -89,6 +89,7 @@ get_league <- function(this_game) {
     print(glue::glue("Limits: {lim}"))
     print(glue::glue("Length {lim[2] - lim[1]}"))
     if (lim[2] - lim[1] > 2000) stop("too many games to get")
+    print(glue::glue("Time now is {Sys.time()}"))
     game_ids <- random_fixtures(lim[1], lim[2], n)
     n_game_ids <- length(game_ids)
     print(glue::glue("There are {n_game_ids} games to get."))

@@ -1,0 +1,63 @@
+
+```{r}
+library(httr2)
+library(rvest)
+library(tidyverse)
+library(lubridate)
+source("teams_fns.R")
+source("soccerway_fns.R")
+source("comp_fns.R")
+source("update.R")
+source("getting-games.R")
+```
+
+initialize games, teams, comps to empty
+
+```{r}
+# initial game numbers
+# games <- game_numbers_to_info()
+```
+
+
+initialize from nothing 
+
+```{r}
+game_id <- sample(3510000:3540000, 5)
+games <- game_numbers_to_info(game_id)
+games
+```
+
+```{r}
+enframe(game_id) %>% 
+  rowwise() %>% 
+  mutate(info = list(game_number_to_info(value))) %>% 
+  hoist(info, "error")
+```
+
+
+game_numbers_to_info <- function(game_numbers) {
+  enframe(game_numbers, name = NULL, value = "game") %>% 
+    rowwise() %>% 
+    mutate(info = list(game_number_to_info(game))) %>% 
+    unnest_wider(info)
+}
+
+
+
+some teams
+
+```{r}
+team_id <- sample(1:50000, 5)
+teams <- numbers_to_team(team_id)
+teams
+```
+
+some comps
+
+```{r}
+comp_id <- sample(50000:60000, 5)
+comp_id
+comps <- numbers_to_comp(comp_id)
+comps
+# number_to_comp(52803)
+```

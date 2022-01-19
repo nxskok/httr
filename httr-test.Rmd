@@ -10,57 +10,6 @@ source("comp_fns.R")
 source("update.R")
 source("getting-games.R")
 ```
-
-initialize games, teams, comps to empty
-
-```{r}
-# initial game numbers
-# games <- game_numbers_to_info()
-```
-
-
-initialize from nothing 
-
-```{r}
-game_id <- sample(3510000:3540000, 5)
-games <- game_numbers_to_info(game_id)
-games
-```
-
-```{r}
-enframe(game_id) %>% 
-  rowwise() %>% 
-  mutate(info = list(game_number_to_info(value))) %>% 
-  hoist(info, "error")
-```
-
-
-game_numbers_to_info <- function(game_numbers) {
-  enframe(game_numbers, name = NULL, value = "game") %>% 
-    rowwise() %>% 
-    mutate(info = list(game_number_to_info(game))) %>% 
-    unnest_wider(info)
-}
-
-
-
-some teams
-
-```{r}
-team_id <- sample(1:50000, 5)
-teams <- numbers_to_team(team_id)
-teams
-```
-
-some comps
-
-```{r}
-comp_id <- sample(50000:60000, 5)
-comp_id
-comps <- numbers_to_comp(comp_id)
-comps
-# number_to_comp(52803)
-```
 ## initialize from previous
 
 ```{r}
@@ -77,25 +26,25 @@ game_ids <- results_to_get(10)
 game_ids
 ```
 
-
+get some random ones
 
 ```{r}
-base <- 3460000
-delta <-  10000
-game_ids <- random_fixtures(base-delta, base+delta, 200)
+base <- 3556000
+delta <-   1000
+game_ids <- random_fixtures(base-delta, base+delta, 100)
 length(game_ids)
 ```
 
 ```{r}
 update_everything(game_ids)
-display_games() %>% arrange(desc(retrieved)) %>% View("games")
+display_games() %>% arrange(desc(retrieved)) %>% View("these games")
 ```
 
 find lower and upper limit of this league
 
 
 ```{r}
-this_game <- 3549720
+this_game <- 3537088
 game_limits <- league_limits(this_game)
 game_limits
 ```
@@ -113,11 +62,29 @@ make a table of leagues with games
 
 ```{r}
 league_games()
-sample(1:920, 1)
+sample(1:1019, 1)
 ```
 
 ```{r}
 display_games() %>% View("games")
 ```
 
+find biggest match gaps
+
+```{r}
+games %>% arrange(game) %>% 
+  select(game) %>% 
+  mutate(last_game = lag(game), 
+         difference = game - last_game) %>% 
+  arrange(desc(difference))
+```
+
+save as feather/fst (latter smaller)
+
+```{r}
+library(feather)
+write_feather(games, "g.feather")
+library(fst)
+write_fst(games, "g.fst")
+```
 
