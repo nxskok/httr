@@ -116,7 +116,5 @@ league_games <- function() {
     unnest_wider(stats) %>%
     select(-data) %>% 
     left_join(comps, by = c("comp" = "comp_id")) %>% 
-    select(-class) %>% 
-    arrange(desc(m)) %>% 
-    View("comps")
+    select(-class) 
 }

@@ -29,8 +29,8 @@ game_ids
 get some random ones
 
 ```{r}
-base <- 3556000
-delta <-   1000
+base <- 3462431
+delta <-      5
 game_ids <- random_fixtures(base-delta, base+delta, 100)
 length(game_ids)
 ```
@@ -44,7 +44,7 @@ find lower and upper limit of this league
 
 
 ```{r}
-this_game <- 3557123
+this_game <- 3582262
 game_limits <- league_limits(this_game)
 game_limits
 ```
@@ -62,7 +62,7 @@ make a table of leagues with games
 
 ```{r}
 league_games()
-sample(1:1025, 1)
+sample(1:1088, 1)
 ```
 
 ```{r}
