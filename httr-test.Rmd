@@ -44,7 +44,7 @@ find lower and upper limit of this league
 
 
 ```{r}
-this_game <- 3537088
+this_game <- 3557123
 game_limits <- league_limits(this_game)
 game_limits
 ```
@@ -62,7 +62,7 @@ make a table of leagues with games
 
 ```{r}
 league_games()
-sample(1:1019, 1)
+sample(1:1025, 1)
 ```
 
 ```{r}
