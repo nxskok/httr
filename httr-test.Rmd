@@ -29,8 +29,8 @@ game_ids
 get some random ones
 
 ```{r}
-base <- 3462431
-delta <-      5
+base <- 3709251
+delta <-    500  
 game_ids <- random_fixtures(base-delta, base+delta, 100)
 length(game_ids)
 ```
@@ -44,7 +44,7 @@ find lower and upper limit of this league
 
 
 ```{r}
-this_game <- 3582262
+this_game <- 3453632
 game_limits <- league_limits(this_game)
 game_limits
 ```
@@ -61,8 +61,10 @@ make a table of leagues with games
 
 
 ```{r}
-league_games()
-sample(1:1088, 1)
+wanted <- read_rds("../ratings/league_ids.rds")
+l <- league_games()
+wanted %>% left_join(l, by = c("id"="comp")) %>% View("comps")
+sample(1:112, 1)
 ```
 
 ```{r}
@@ -72,19 +74,34 @@ display_games() %>% View("games")
 find biggest match gaps
 
 ```{r}
+games <- read_rds("games.rds")
 games %>% arrange(game) %>% 
   select(game) %>% 
   mutate(last_game = lag(game), 
          difference = game - last_game) %>% 
-  arrange(desc(difference))
+  arrange(desc(difference)) -> dd1
+dd1
 ```
+
+```{r}
+game_ids <- random_fixtures(dd1$last_game[1], dd1$game[1], 100)
+update_everything(game_ids)
+display_games() %>% arrange(desc(retrieved)) %>% View("these games")
+```
+
 
 save as feather/fst (latter smaller)
 
 ```{r}
-library(feather)
-write_feather(games, "g.feather")
+# library(feather)
+# write_feather(games, "g.feather")
 library(fst)
 write_fst(games, "g.fst")
+```
+
+find leagues I want
+
+```{r}
+
 ```
 
