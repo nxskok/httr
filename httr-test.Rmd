@@ -29,9 +29,9 @@ game_ids
 get some random ones
 
 ```{r}
-base <- 3709251
-delta <-    500  
-game_ids <- random_fixtures(base-delta, base+delta, 100)
+base <- 3451637
+delta <-     10  
+game_ids <- random_fixtures(base-delta, base+delta, 20)
 length(game_ids)
 ```
 
@@ -44,7 +44,7 @@ find lower and upper limit of this league
 
 
 ```{r}
-this_game <- 3453632
+this_game <- 3451646
 game_limits <- league_limits(this_game)
 game_limits
 ```
@@ -99,9 +99,14 @@ library(fst)
 write_fst(games, "g.fst")
 ```
 
-find leagues I want
+remove a game
 
 ```{r}
-
+rem <- 3582303
+games <- read_rds("games.rds")
+nrow(games)
+games %>%  filter(game != rem) -> games
+nrow(games)
+write_rds(games, "games.rds")
 ```
 
